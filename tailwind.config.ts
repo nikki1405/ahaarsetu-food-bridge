@@ -61,7 +61,46 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// AhaarSetu custom colors
+				ahaarsetu: {
+					green: {
+						50: '#F2FCE2',
+						100: '#E3F8C6',
+						200: '#C7F190',
+						300: '#AAE75A',
+						400: '#8FDB32',
+						500: '#6AB721',
+						600: '#4F9518',
+						700: '#3B740F',
+						800: '#2A5308',
+						900: '#1A3A04',
+					},
+					peach: {
+						50: '#FDE1D3',
+						100: '#FEC6A1',
+						200: '#FD9E69',
+						300: '#FC7537',
+						400: '#FB5005',
+						500: '#D94104',
+						600: '#A73204',
+						700: '#752302',
+						800: '#421401',
+						900: '#240B00',
+					},
+					yellow: {
+						50: '#FEF7CD',
+						100: '#FEED9B',
+						200: '#FDE069',
+						300: '#FCD437',
+						400: '#FBC705',
+						500: '#D9A804',
+						600: '#A78303',
+						700: '#755D02',
+						800: '#423401',
+						900: '#241E01',
+					},
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
