@@ -1,23 +1,30 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/ui/language-toggle";
-import { Menu, X, LogOut, PlusCircle, BarChart2, User, BookHeart, ClipboardList, FileEdit } from "lucide-react";
+import { Menu, X, LogOut, PlusCircle, BarChart2, User, BookHeart, ClipboardList, MapPin, Mail } from "lucide-react";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<"donor" | "receiver" | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     // Check if user is logged in based on current path
-    const path = window.location.pathname;
-    if (path.includes("donor") || path.includes("receiver")) {
+    const path = location.pathname;
+    if (path.includes("donor")) {
       setIsLoggedIn(true);
-      setUserRole(path.includes("donor") ? "donor" : "receiver");
+      setUserRole("donor");
+    } else if (path.includes("receiver")) {
+      setIsLoggedIn(true);
+      setUserRole("receiver");
+    } else if (path === "/" || path === "/login" || path === "/register" || path === "/about" || path === "/contact") {
+      setIsLoggedIn(false);
+      setUserRole(null);
     }
 
     const handleScroll = () => {
@@ -32,7 +39,7 @@ export function Navbar() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [location.pathname]);
 
   // Handler for logout (simulated)
   const handleLogout = () => {
@@ -64,36 +71,113 @@ export function Navbar() {
           </Link>
         )}
 
-        {/* Desktop Navigation - Post Login */}
-        {isLoggedIn && (
+        {/* Desktop Navigation - Post Login - Donor */}
+        {isLoggedIn && userRole === "donor" && (
           <nav className="hidden md:flex items-center gap-6">
-            <Link to={`/${userRole}-dashboard`} className="text-foreground hover:text-primary transition-colors">
+            <Link 
+              to="/donor-dashboard" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/donor-dashboard" && "text-primary font-medium"
+              )}
+            >
               Dashboard
             </Link>
-            {userRole === "donor" && (
-              <>
-                <Link to="/new-donation" className="text-foreground hover:text-primary transition-colors">
-                  Post Donation
-                </Link>
-                <Link to="/my-donations" className="text-foreground hover:text-primary transition-colors">
-                  My Donations
-                </Link>
-                <Link to="/campaigns" className="text-foreground hover:text-primary transition-colors">
-                  Campaigns
-                </Link>
-              </>
-            )}
-            {userRole === "receiver" && (
-              <>
-                <Link to="/view-requests" className="text-foreground hover:text-primary transition-colors">
-                  View Requests
-                </Link>
-                <Link to="/campaigns" className="text-foreground hover:text-primary transition-colors">
-                  Campaigns
-                </Link>
-              </>
-            )}
-            <Link to="/profile" className="text-foreground hover:text-primary transition-colors">
+            <Link 
+              to="/new-donation" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/new-donation" && "text-primary font-medium"
+              )}
+            >
+              Post Donation
+            </Link>
+            <Link 
+              to="/my-donations" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/my-donations" && "text-primary font-medium"
+              )}
+            >
+              My Donations
+            </Link>
+            <Link 
+              to="/campaigns" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/campaigns" && "text-primary font-medium"
+              )}
+            >
+              Campaigns
+            </Link>
+            <Link 
+              to="/profile" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/profile" && "text-primary font-medium"
+              )}
+            >
+              Profile
+            </Link>
+            <LanguageToggle />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-2"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </nav>
+        )}
+
+        {/* Desktop Navigation - Post Login - Receiver */}
+        {isLoggedIn && userRole === "receiver" && (
+          <nav className="hidden md:flex items-center gap-6">
+            <Link 
+              to="/receiver-dashboard" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/receiver-dashboard" && "text-primary font-medium"
+              )}
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/food-map" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/food-map" && "text-primary font-medium"
+              )}
+            >
+              Available Food
+            </Link>
+            <Link 
+              to="/my-requests" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/my-requests" && "text-primary font-medium"
+              )}
+            >
+              My Requests
+            </Link>
+            <Link 
+              to="/campaigns" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/campaigns" && "text-primary font-medium"
+              )}
+            >
+              Campaigns
+            </Link>
+            <Link 
+              to="/profile" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/profile" && "text-primary font-medium"
+              )}
+            >
               Profile
             </Link>
             <LanguageToggle />
@@ -112,13 +196,31 @@ export function Navbar() {
         {/* Desktop Navigation - Pre Login */}
         {!isLoggedIn && (
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-foreground hover:text-primary transition-colors">
+            <Link 
+              to="/" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/" && "text-primary font-medium"
+              )}
+            >
               Home
             </Link>
-            <Link to="/about" className="text-foreground hover:text-primary transition-colors">
+            <Link 
+              to="/about" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/about" && "text-primary font-medium"
+              )}
+            >
               About Us
             </Link>
-            <Link to="/contact" className="text-foreground hover:text-primary transition-colors">
+            <Link 
+              to="/contact" 
+              className={cn(
+                "text-foreground hover:text-primary transition-colors",
+                location.pathname === "/contact" && "text-primary font-medium"
+              )}
+            >
               Contact
             </Link>
             <LanguageToggle />
@@ -152,68 +254,118 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white shadow-lg p-4">
           <nav className="flex flex-col gap-4">
-            {isLoggedIn ? (
-              // Post-login mobile menu
+            {isLoggedIn && userRole === "donor" ? (
+              // Post-login mobile menu for Donor
               <>
                 <Link
-                  to={`/${userRole}-dashboard`}
-                  className="text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2"
+                  to="/donor-dashboard"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/donor-dashboard" && "text-primary font-medium"
+                  )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <BarChart2 className="h-4 w-4" />
                   Dashboard
                 </Link>
-                {userRole === "donor" && (
-                  <>
-                    <Link
-                      to="/new-donation"
-                      className="text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <PlusCircle className="h-4 w-4" />
-                      Post Donation
-                    </Link>
-                    <Link
-                      to="/my-donations"
-                      className="text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <ClipboardList className="h-4 w-4" />
-                      My Donations
-                    </Link>
-                    <Link
-                      to="/campaigns"
-                      className="text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <BookHeart className="h-4 w-4" />
-                      Campaigns
-                    </Link>
-                  </>
-                )}
-                {userRole === "receiver" && (
-                  <>
-                    <Link
-                      to="/view-requests"
-                      className="text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <ClipboardList className="h-4 w-4" />
-                      View Requests
-                    </Link>
-                    <Link
-                      to="/campaigns"
-                      className="text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <BookHeart className="h-4 w-4" />
-                      Campaigns
-                    </Link>
-                  </>
-                )}
+                <Link
+                  to="/new-donation"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/new-donation" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  Post Donation
+                </Link>
+                <Link
+                  to="/my-donations"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/my-donations" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  My Donations
+                </Link>
+                <Link
+                  to="/campaigns"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/campaigns" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BookHeart className="h-4 w-4" />
+                  Campaigns
+                </Link>
                 <Link
                   to="/profile"
-                  className="text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/profile" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <User className="h-4 w-4" />
+                  Profile
+                </Link>
+              </>
+            ) : isLoggedIn && userRole === "receiver" ? (
+              // Post-login mobile menu for Receiver
+              <>
+                <Link
+                  to="/receiver-dashboard"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/receiver-dashboard" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BarChart2 className="h-4 w-4" />
+                  Dashboard
+                </Link>
+                <Link
+                  to="/food-map"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/food-map" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <MapPin className="h-4 w-4" />
+                  Available Food
+                </Link>
+                <Link
+                  to="/my-requests"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/my-requests" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Mail className="h-4 w-4" />
+                  My Requests
+                </Link>
+                <Link
+                  to="/campaigns"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/campaigns" && "text-primary font-medium"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BookHeart className="h-4 w-4" />
+                  Campaigns
+                </Link>
+                <Link
+                  to="/profile"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors flex items-center gap-2",
+                    location.pathname === "/profile" && "text-primary font-medium"
+                  )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <User className="h-4 w-4" />
@@ -225,21 +377,30 @@ export function Navbar() {
               <>
                 <Link
                   to="/"
-                  className="text-foreground hover:text-primary py-2 transition-colors"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors",
+                    location.pathname === "/" && "text-primary font-medium"
+                  )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Home
                 </Link>
                 <Link
                   to="/about"
-                  className="text-foreground hover:text-primary py-2 transition-colors"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors",
+                    location.pathname === "/about" && "text-primary font-medium"
+                  )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   About Us
                 </Link>
                 <Link
                   to="/contact"
-                  className="text-foreground hover:text-primary py-2 transition-colors"
+                  className={cn(
+                    "text-foreground hover:text-primary py-2 transition-colors",
+                    location.pathname === "/contact" && "text-primary font-medium"
+                  )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Contact

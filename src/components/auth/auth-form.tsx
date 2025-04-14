@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -57,7 +56,6 @@ export function AuthForm({ type }: AuthFormProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
-    // Clear error when user types
     if (errors[id as keyof FormErrors]) {
       setErrors(prev => ({ ...prev, [id]: undefined }));
     }
@@ -66,21 +64,18 @@ export function AuthForm({ type }: AuthFormProps) {
   const validateForm = () => {
     const newErrors: FormErrors = {};
     
-    // Validate email
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email address";
     }
     
-    // Validate password
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (type === "register" && formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
     
-    // For registration, validate additional fields
     if (type === "register") {
       if (!formData.firstName) {
         newErrors.firstName = "First name is required";
@@ -104,12 +99,14 @@ export function AuthForm({ type }: AuthFormProps) {
   };
 
   const authenticateUser = async () => {
-    // Demo authentication - normally this would be an API call
-    return new Promise<boolean>((resolve) => {
+    return new Promise<{isValid: boolean; userRole: string}>((resolve) => {
       setTimeout(() => {
         const isValid = formData.email === "demo@ahaaarsetu.com" && formData.password === "123456";
-        resolve(isValid);
-      }, 1000); // Simulate network delay
+        resolve({
+          isValid,
+          userRole: userType
+        });
+      }, 1000);
     });
   };
 
@@ -124,17 +121,16 @@ export function AuthForm({ type }: AuthFormProps) {
     
     if (type === "login") {
       try {
-        const isAuthenticated = await authenticateUser();
+        const { isValid, userRole } = await authenticateUser();
         
-        if (isAuthenticated) {
+        if (isValid) {
           toast({
             title: "Login successful",
-            description: "Redirecting to your dashboard...",
+            description: `Redirecting to ${userRole} dashboard...`,
           });
           
-          // Redirect to appropriate dashboard based on user type
           setTimeout(() => {
-            navigate(userType === "donor" ? "/donor-dashboard" : "/receiver-dashboard");
+            navigate(userRole === "donor" ? "/donor-dashboard" : "/receiver-dashboard");
           }, 1000);
         } else {
           setErrors({
@@ -149,8 +145,6 @@ export function AuthForm({ type }: AuthFormProps) {
         setIsLoading(false);
       }
     } else {
-      // For registration, we'd normally send the data to an API
-      // For now, just simulate a successful registration
       setTimeout(() => {
         toast({
           title: "Registration successful",
@@ -184,6 +178,27 @@ export function AuthForm({ type }: AuthFormProps) {
           )}
         
           {isRegistration && (
+            <div className="space-y-2">
+              <Label>I am a</Label>
+              <RadioGroup
+                defaultValue={userType}
+                value={userType}
+                onValueChange={setUserType}
+                className="flex gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="donor" id="donor" />
+                  <Label htmlFor="donor" className="cursor-pointer">Food Donor</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="receiver" id="receiver" />
+                  <Label htmlFor="receiver" className="cursor-pointer">Food Receiver</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          )}
+
+          {!isRegistration && (
             <div className="space-y-2">
               <Label>I am a</Label>
               <RadioGroup
