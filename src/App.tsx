@@ -9,6 +9,9 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import DonorDashboard from "./pages/donor-dashboard";
 import ReceiverDashboard from "./pages/receiver-dashboard";
+import MyDonations from "./pages/my-donations";
+import EditDonation from "./pages/edit-donation";
+import DonationDetails from "./pages/donation-details";
 import NewDonation from "./pages/new-donation";
 import About from "./pages/about";
 import Contact from "./pages/contact";
@@ -29,6 +32,9 @@ const App = () => (
           <Route path="/donor-dashboard" element={<DonorDashboard />} />
           <Route path="/receiver-dashboard" element={<ReceiverDashboard />} />
           <Route path="/new-donation" element={<NewDonation />} />
+          <Route path="/my-donations" element={<MyDonations />} />
+          <Route path="/edit-donation/:id" element={<EditDonation />} />
+          <Route path="/donation/:id" element={<DonationDetails />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

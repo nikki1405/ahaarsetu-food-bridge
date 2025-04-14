@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Table, 
@@ -16,9 +17,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Clock, MapPin, MoreVertical, Search, Filter } from "lucide-react";
+import { Calendar, Clock, MapPin, MoreVertical, Search, Filter, FileEdit, Eye, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data for donations
 const mockDonations = [
@@ -72,6 +85,7 @@ interface DonationListProps {
 
 export function DonationList({ type }: DonationListProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
   
   const getStatusBadge = (status: DonationStatus) => {
     switch (status) {
@@ -93,6 +107,16 @@ export function DonationList({ type }: DonationListProps) {
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
+    });
+  };
+
+  const handleDeleteDonation = (id: string) => {
+    // In a real app, we would delete the donation
+    console.log("Deleting donation:", id);
+    
+    toast({
+      title: "Donation Deleted",
+      description: "The donation has been successfully deleted.",
     });
   };
 
@@ -135,7 +159,7 @@ export function DonationList({ type }: DonationListProps) {
                 {type === "receiver" && <TableHead>Distance</TableHead>}
                 <TableHead>Expiry</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-[100px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -161,22 +185,52 @@ export function DonationList({ type }: DonationListProps) {
                     </TableCell>
                     <TableCell>{getStatusBadge(donation.status as DonationStatus)}</TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                      <div className="flex justify-end gap-2">
+                        <Link to={`/donation/${donation.id}`}>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          {type === "donor" && donation.status === "pending" && (
-                            <DropdownMenuItem>Edit Donation</DropdownMenuItem>
-                          )}
-                          {type === "receiver" && donation.status === "pending" && (
-                            <DropdownMenuItem>Request Pickup</DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                        </Link>
+                        
+                        {type === "donor" && donation.status === "pending" && (
+                          <Link to={`/edit-donation/${donation.id}`}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <FileEdit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        )}
+                        
+                        {type === "donor" && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/80">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently delete your
+                                  donation and remove it from our servers.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteDonation(donation.id)}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                        
+                        {type === "receiver" && donation.status === "pending" && (
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
+                            <MapPin className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
