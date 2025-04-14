@@ -2,7 +2,8 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AuthForm } from "@/components/auth/auth-form";
-import { BookHeart } from "lucide-react";
+import { BookHeart, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Login = () => {
   return (
@@ -16,6 +17,12 @@ const Login = () => {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-center mb-8">Welcome Back to AhaarSetu</h1>
+          <Alert className="mb-4 bg-primary/10 border-primary/20">
+            <Info className="h-4 w-4 text-primary" />
+            <AlertDescription>
+              <span className="font-medium">Demo credentials:</span> Use email <span className="font-mono bg-muted px-1 rounded">demo@ahaaarsetu.com</span> and password <span className="font-mono bg-muted px-1 rounded">123456</span> to login.
+            </AlertDescription>
+          </Alert>
           <AuthForm type="login" />
         </div>
       </main>
