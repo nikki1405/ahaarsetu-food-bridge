@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/login";
 import Register from "./pages/register";
@@ -35,6 +35,8 @@ const App = () => (
           <Route path="/my-donations" element={<MyDonations />} />
           <Route path="/edit-donation/:id" element={<EditDonation />} />
           <Route path="/donation/:id" element={<DonationDetails />} />
+          <Route path="/food-map" element={<Navigate to="/receiver-dashboard" />} /> {/* Temporary redirect until food-map is created */}
+          <Route path="/my-requests" element={<Navigate to="/receiver-dashboard" />} /> {/* Temporary redirect until my-requests is created */}
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

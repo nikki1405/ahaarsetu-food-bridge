@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { User, BarChart2, LogOut, BookHeart, MapPin, Mail, Calendar } from "lucide-react";
+import { User, BarChart2, LogOut, BookHeart, MapPin, Mail, Calendar, Filter, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   Sidebar,
   SidebarContent,
@@ -138,23 +139,106 @@ const ReceiverDashboard = () => {
                 </Card>
               </div>
 
-              <Tabs defaultValue="list" className="mb-4">
-                <TabsList className="grid w-full grid-cols-2 max-w-md">
-                  <TabsTrigger value="list">List View</TabsTrigger>
-                  <TabsTrigger value="map">Map View</TabsTrigger>
-                </TabsList>
-                <TabsContent value="list" className="mt-6">
-                  <div className="mb-4">
+              {/* Available Food Section */}
+              <div className="mb-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                  <h2 className="text-xl font-semibold">Available Food Near You</h2>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search food..."
+                        className="pl-9 h-9 min-w-[200px]"
+                      />
+                    </div>
+                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                      <Filter className="h-4 w-4" />
+                      Filter
+                    </Button>
+                  </div>
+                </div>
+                
+                <Tabs defaultValue="list" className="mb-4">
+                  <TabsList className="grid w-full grid-cols-2 max-w-md">
+                    <TabsTrigger value="list">List View</TabsTrigger>
+                    <TabsTrigger value="map">Map View</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="list" className="mt-6">
                     <DonationList type="receiver" />
-                  </div>
-                </TabsContent>
-                <TabsContent value="map" className="mt-6">
-                  <div className="mb-4">
-                    <h2 className="text-xl font-semibold mb-4">Food Donations Near You</h2>
+                  </TabsContent>
+                  <TabsContent value="map" className="mt-6">
                     <FoodMap />
-                  </div>
-                </TabsContent>
-              </Tabs>
+                  </TabsContent>
+                </Tabs>
+              </div>
+
+              {/* My Requests Section */}
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">My Requests</h2>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/my-requests">View All</Link>
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Pending Request Card */}
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between">
+                        <CardTitle className="text-base">Rice and Curry</CardTitle>
+                        <span className="text-amber-600 bg-amber-50 text-xs px-2 py-1 rounded-full font-medium">Pending</span>
+                      </div>
+                      <CardDescription>Requested on Apr 14, 2025</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-sm space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Quantity:</span>
+                          <span>3kg</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Pickup Time:</span>
+                          <span>Apr 15, 5:30 PM</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Location:</span>
+                          <span>2.1km away</span>
+                        </div>
+                      </div>
+                      <Button className="w-full mt-4" size="sm">Mark as Received</Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Approved Request Card */}
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between">
+                        <CardTitle className="text-base">Bread and Pastries</CardTitle>
+                        <span className="text-green-600 bg-green-50 text-xs px-2 py-1 rounded-full font-medium">Approved</span>
+                      </div>
+                      <CardDescription>Requested on Apr 13, 2025</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-sm space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Quantity:</span>
+                          <span>20 pieces</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Pickup Time:</span>
+                          <span>Today, 3:00 PM</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Location:</span>
+                          <span>1.5km away</span>
+                        </div>
+                      </div>
+                      <Button className="w-full mt-4" size="sm">Mark as Received</Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </div>
           </main>
         </div>
