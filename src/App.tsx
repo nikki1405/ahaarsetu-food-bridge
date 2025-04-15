@@ -13,6 +13,8 @@ import ReceiverDashboard from "./pages/receiver-dashboard";
 import MyDonations from "./pages/my-donations";
 import EditDonation from "./pages/edit-donation";
 import DonationDetails from "./pages/donation-details";
+import DonorProfile from "./pages/donor-profile";
+import ReceiverProfile from "./pages/receiver-profile";
 import NewDonation from "./pages/new-donation";
 import About from "./pages/about";
 import Contact from "./pages/contact";
@@ -30,6 +32,31 @@ const ProtectedDonorRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   return <>{children}</>;
+};
+
+// Route protection for receiver routes
+const ProtectedReceiverRoute = ({ children }: { children: React.ReactNode }) => {
+  // In a real app, this would check authentication state from context/store
+  const userRole = localStorage.getItem("userRole") || "";
+  
+  if (userRole !== "receiver") {
+    return <Navigate to="/donor-dashboard" />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Route that redirects to the appropriate profile based on role
+const ProfileRedirect = () => {
+  const userRole = localStorage.getItem("userRole") || "";
+  
+  if (userRole === "donor") {
+    return <Navigate to="/donor-profile" />;
+  } else if (userRole === "receiver") {
+    return <Navigate to="/receiver-profile" />;
+  } else {
+    return <Navigate to="/login" />;
+  }
 };
 
 const App = () => {
@@ -64,6 +91,9 @@ const App = () => {
             <Route path="/donor-dashboard" element={<DonorDashboard />} />
             <Route path="/receiver-dashboard" element={<ReceiverDashboard />} />
             
+            {/* Generic profile redirector */}
+            <Route path="/profile" element={<ProfileRedirect />} />
+            
             {/* Protected Donor Routes */}
             <Route path="/new-donation" element={
               <ProtectedDonorRoute>
@@ -79,6 +109,18 @@ const App = () => {
               <ProtectedDonorRoute>
                 <EditDonation />
               </ProtectedDonorRoute>
+            } />
+            <Route path="/donor-profile" element={
+              <ProtectedDonorRoute>
+                <DonorProfile />
+              </ProtectedDonorRoute>
+            } />
+            
+            {/* Protected Receiver Routes */}
+            <Route path="/receiver-profile" element={
+              <ProtectedReceiverRoute>
+                <ReceiverProfile />
+              </ProtectedReceiverRoute>
             } />
             
             <Route path="/donation/:id" element={<DonationDetails />} />

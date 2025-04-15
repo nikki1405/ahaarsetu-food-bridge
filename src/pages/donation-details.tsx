@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -12,7 +12,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { User, BarChart2, LogOut, BookHeart, PlusCircle, ClipboardList, Calendar, MapPin, Clock, FileEdit, Trash2, ArrowLeft } from "lucide-react";
+import { User, BarChart2, LogOut, BookHeart, PlusCircle, ClipboardList, Calendar, MapPin, Clock, FileEdit, Trash2, ArrowLeft, CheckCircle2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -60,6 +60,15 @@ const DonationDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const [showMap, setShowMap] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isRequested, setIsRequested] = useState(false);
+  const [isReceived, setIsReceived] = useState(false);
+  
+  useEffect(() => {
+    // Get user role from localStorage
+    const storedRole = localStorage.getItem("userRole");
+    setUserRole(storedRole);
+  }, []);
   
   // In a real app, we would fetch the donation data based on the ID
   const donation = mockDonationData;
@@ -76,6 +85,32 @@ const DonationDetails = () => {
     
     // Navigate back to my donations page
     window.location.href = "/my-donations";
+  };
+  
+  const handleRequest = () => {
+    // In a real app, we would make an API call to request the donation
+    console.log("Requesting donation:", id);
+    
+    // Show success toast
+    toast({
+      title: "Request Sent",
+      description: "Your request has been sent to the donor.",
+    });
+    
+    setIsRequested(true);
+  };
+  
+  const handleMarkAsReceived = () => {
+    // In a real app, we would make an API call to mark the donation as received
+    console.log("Marking donation as received:", id);
+    
+    // Show success toast
+    toast({
+      title: "Donation Received",
+      description: "You have successfully marked this donation as received.",
+    });
+    
+    setIsReceived(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -101,6 +136,15 @@ const DonationDetails = () => {
       minute: "2-digit",
     });
   };
+  
+  // Determine the back link based on user role
+  const getBackLink = () => {
+    if (userRole === "donor") {
+      return "/my-donations";
+    } else {
+      return "/receiver-dashboard";
+    }
+  };
 
   return (
     <SidebarProvider>
@@ -123,31 +167,58 @@ const DonationDetails = () => {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Dashboard">
-                      <Link to="/donor-dashboard">
+                      <Link to={userRole === "donor" ? "/donor-dashboard" : "/receiver-dashboard"}>
                         <BarChart2 className="h-4 w-4" />
                         <span>Dashboard</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Post New Food">
-                      <Link to="/new-donation">
-                        <PlusCircle className="h-4 w-4" />
-                        <span>Post New Food</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="My Donations" isActive>
-                      <Link to="/my-donations">
-                        <ClipboardList className="h-4 w-4" />
-                        <span>My Donations</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  
+                  {userRole === "donor" && (
+                    <>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild tooltip="Post New Food">
+                          <Link to="/new-donation">
+                            <PlusCircle className="h-4 w-4" />
+                            <span>Post New Food</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild tooltip="My Donations" isActive>
+                          <Link to="/my-donations">
+                            <ClipboardList className="h-4 w-4" />
+                            <span>My Donations</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </>
+                  )}
+                  
+                  {userRole === "receiver" && (
+                    <>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild tooltip="Available Food">
+                          <Link to="/food-map">
+                            <MapPin className="h-4 w-4" />
+                            <span>Available Food</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild tooltip="My Requests">
+                          <Link to="/my-requests">
+                            <ClipboardList className="h-4 w-4" />
+                            <span>My Requests</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </>
+                  )}
+                  
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Profile">
-                      <Link to="/profile">
+                      <Link to={userRole === "donor" ? "/donor-profile" : "/receiver-profile"}>
                         <User className="h-4 w-4" />
                         <span>Profile</span>
                       </Link>
@@ -174,13 +245,15 @@ const DonationDetails = () => {
           <main className="flex-1 py-8 px-4 md:px-8 bg-muted/10 overflow-auto">
             <div className="container mx-auto">
               <div className="mb-8">
-                <Link to="/my-donations" className="flex items-center text-primary mb-4 hover:underline">
+                <Link to={getBackLink()} className="flex items-center text-primary mb-4 hover:underline">
                   <ArrowLeft className="h-4 w-4 mr-1" />
-                  Back to My Donations
+                  Back to {userRole === "donor" ? "My Donations" : "Dashboard"}
                 </Link>
                 <h1 className="text-2xl md:text-3xl font-bold">Donation Details</h1>
                 <p className="text-muted-foreground">
-                  View complete information about your food donation
+                  {userRole === "donor" 
+                    ? "View complete information about your food donation" 
+                    : "View details about this food donation"}
                 </p>
               </div>
               
@@ -276,44 +349,96 @@ const DonationDetails = () => {
                     </CardContent>
                   </Card>
                   
+                  {/* Actions Card - Different for Donor and Receiver */}
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-xl">Actions</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <p className="text-sm text-muted-foreground">
-                        You can manage your donation with these actions:
-                      </p>
-                      <div className="flex flex-col gap-3">
-                        <Link to={`/edit-donation/${id}`} className="w-full">
-                          <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-                            <FileEdit className="h-4 w-4" />
-                            Edit Donation
-                          </Button>
-                        </Link>
-                        
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="destructive" className="w-full flex items-center justify-center gap-2">
-                              <Trash2 className="h-4 w-4" />
-                              Delete Donation
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete your
-                                donation and remove it from our servers.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
+                      {userRole === "donor" ? (
+                        // Donor Actions
+                        <>
+                          <p className="text-sm text-muted-foreground">
+                            You can manage your donation with these actions:
+                          </p>
+                          <div className="flex flex-col gap-3">
+                            <Link to={`/edit-donation/${id}`} className="w-full">
+                              <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                                <FileEdit className="h-4 w-4" />
+                                Edit Donation
+                              </Button>
+                            </Link>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="destructive" className="w-full flex items-center justify-center gap-2">
+                                  <Trash2 className="h-4 w-4" />
+                                  Delete Donation
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete your
+                                    donation and remove it from our servers.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </>
+                      ) : (
+                        // Receiver Actions
+                        <>
+                          <p className="text-sm text-muted-foreground">
+                            You can interact with this donation using these actions:
+                          </p>
+                          <div className="flex flex-col gap-3">
+                            {!isRequested && !isReceived ? (
+                              <Button 
+                                onClick={handleRequest} 
+                                className="w-full flex items-center justify-center gap-2"
+                              >
+                                <PlusCircle className="h-4 w-4" />
+                                Request Pickup
+                              </Button>
+                            ) : !isReceived ? (
+                              <Button 
+                                onClick={handleMarkAsReceived}
+                                variant="outline" 
+                                className="w-full flex items-center justify-center gap-2"
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                                Mark as Received
+                              </Button>
+                            ) : (
+                              <Button 
+                                disabled
+                                variant="ghost" 
+                                className="w-full flex items-center justify-center gap-2 bg-green-50 text-green-700 cursor-default"
+                              >
+                                <CheckCircle2 className="h-4 w-4" />
+                                Received
+                              </Button>
+                            )}
+                            
+                            <Link to="/food-map" className="w-full">
+                              <Button 
+                                variant={isRequested ? "outline" : "ghost"} 
+                                className="w-full flex items-center justify-center gap-2"
+                              >
+                                <MapPin className="h-4 w-4" />
+                                View on Map
+                              </Button>
+                            </Link>
+                          </div>
+                        </>
+                      )}
                     </CardContent>
                   </Card>
                 </div>

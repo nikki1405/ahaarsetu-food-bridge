@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -78,8 +79,14 @@ interface DonationListProps {
 
 export function DonationList({ type }: DonationListProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [userRole, setUserRole] = useState<string | null>(null);
   const { toast } = useToast();
-  const userRole = localStorage.getItem("userRole") || type;
+
+  useEffect(() => {
+    // Get user role from localStorage
+    const storedRole = localStorage.getItem("userRole");
+    setUserRole(storedRole);
+  }, []);
 
   const getStatusBadge = (status: DonationStatus) => {
     switch (status) {
@@ -118,12 +125,15 @@ export function DonationList({ type }: DonationListProps) {
     donation.type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Check if user is a donor (either by prop or stored role)
+  const isDonor = type === "donor" || userRole === "donor";
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <CardTitle>
-            {type === "donor" ? "Your Donations" : "Available Food"}
+            {isDonor ? "Your Donations" : "Available Food"}
           </CardTitle>
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
@@ -149,7 +159,7 @@ export function DonationList({ type }: DonationListProps) {
                 <TableHead>Food Items</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Quantity</TableHead>
-                {type === "receiver" && <TableHead>Distance</TableHead>}
+                {!isDonor && <TableHead>Distance</TableHead>}
                 <TableHead>Expiry</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="w-[100px] text-right">Actions</TableHead>
@@ -162,7 +172,7 @@ export function DonationList({ type }: DonationListProps) {
                     <TableCell className="font-medium">{donation.food}</TableCell>
                     <TableCell>{donation.type}</TableCell>
                     <TableCell>{donation.quantity}</TableCell>
-                    {type === "receiver" && (
+                    {!isDonor && (
                       <TableCell className="whitespace-nowrap">
                         <div className="flex items-center gap-1">
                           <MapPin className="h-3 w-3 text-muted-foreground" />
@@ -185,7 +195,7 @@ export function DonationList({ type }: DonationListProps) {
                           </Button>
                         </Link>
                         
-                        {(userRole === "donor" || type === "donor") && donation.status === "pending" && (
+                        {isDonor && donation.status === "pending" && (
                           <Link to={`/edit-donation/${donation.id}`}>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <FileEdit className="h-4 w-4" />
@@ -193,7 +203,7 @@ export function DonationList({ type }: DonationListProps) {
                           </Link>
                         )}
                         
-                        {(userRole === "donor" || type === "donor") && (
+                        {isDonor && (
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/80">
@@ -218,7 +228,7 @@ export function DonationList({ type }: DonationListProps) {
                           </AlertDialog>
                         )}
                         
-                        {type === "receiver" && donation.status === "pending" && (
+                        {!isDonor && donation.status === "pending" && (
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
                             <MapPin className="h-4 w-4" />
                           </Button>
@@ -230,7 +240,7 @@ export function DonationList({ type }: DonationListProps) {
               ) : (
                 <TableRow>
                   <TableCell 
-                    colSpan={type === "receiver" ? 7 : 6} 
+                    colSpan={!isDonor ? 7 : 6} 
                     className="h-32 text-center text-muted-foreground"
                   >
                     No donations found.
