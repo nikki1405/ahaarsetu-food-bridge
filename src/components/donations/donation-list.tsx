@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,15 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Calendar, Clock, MapPin, MoreVertical, Search, Filter, FileEdit, Eye, Trash2 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -31,6 +21,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Calendar, Clock, MapPin, Search, Filter, FileEdit, Eye, Trash2 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
 // Mock data for donations
@@ -86,7 +79,8 @@ interface DonationListProps {
 export function DonationList({ type }: DonationListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
-  
+  const userRole = localStorage.getItem("userRole") || type;
+
   const getStatusBadge = (status: DonationStatus) => {
     switch (status) {
       case "pending":
@@ -111,7 +105,6 @@ export function DonationList({ type }: DonationListProps) {
   };
 
   const handleDeleteDonation = (id: string) => {
-    // In a real app, we would delete the donation
     console.log("Deleting donation:", id);
     
     toast({
@@ -192,7 +185,7 @@ export function DonationList({ type }: DonationListProps) {
                           </Button>
                         </Link>
                         
-                        {type === "donor" && donation.status === "pending" && (
+                        {(userRole === "donor" || type === "donor") && donation.status === "pending" && (
                           <Link to={`/edit-donation/${donation.id}`}>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <FileEdit className="h-4 w-4" />
@@ -200,7 +193,7 @@ export function DonationList({ type }: DonationListProps) {
                           </Link>
                         )}
                         
-                        {type === "donor" && (
+                        {(userRole === "donor" || type === "donor") && (
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/80">

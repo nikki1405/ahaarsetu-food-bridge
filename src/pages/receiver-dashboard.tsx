@@ -22,14 +22,20 @@ import {
   SidebarGroupLabel,
   SidebarGroup,
 } from "@/components/ui/sidebar";
+import { useEffect } from "react";
 
 const ReceiverDashboard = () => {
+  // Set user role for consistent experience
+  useEffect(() => {
+    localStorage.setItem("userRole", "receiver");
+  }, []);
+  
   return (
     <SidebarProvider>
       <div className="min-h-screen flex flex-col w-full">
         <Navbar />
         <div className="flex flex-1">
-          {/* Sidebar */}
+          {/* Sidebar - Remove my-donations link for receivers */}
           <Sidebar>
             <SidebarHeader className="border-b border-sky-500/20 bg-sky-500/10">
               <div className="flex items-center gap-2 px-4 py-2">

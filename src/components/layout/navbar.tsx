@@ -14,14 +14,19 @@ export function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    // Check if user is logged in based on current path
+    // Check stored role first (for protected routes)
+    const storedRole = localStorage.getItem("userRole");
+    
+    // Then check path-based role if stored role is not available
     const path = location.pathname;
-    if (path.includes("donor")) {
+    if (storedRole === "donor" || path.includes("donor")) {
       setIsLoggedIn(true);
       setUserRole("donor");
-    } else if (path.includes("receiver")) {
+      localStorage.setItem("userRole", "donor");
+    } else if (storedRole === "receiver" || path.includes("receiver")) {
       setIsLoggedIn(true);
       setUserRole("receiver");
+      localStorage.setItem("userRole", "receiver");
     } else if (path === "/" || path === "/login" || path === "/register" || path === "/about" || path === "/contact") {
       setIsLoggedIn(false);
       setUserRole(null);
@@ -44,6 +49,7 @@ export function Navbar() {
   // Handler for logout (simulated)
   const handleLogout = () => {
     // In a real app, we would clear authentication tokens here
+    localStorage.removeItem("userRole");
     window.location.href = "/login";
   };
 
@@ -314,7 +320,7 @@ export function Navbar() {
                 </Link>
               </>
             ) : isLoggedIn && userRole === "receiver" ? (
-              // Post-login mobile menu for Receiver
+              // Post-login mobile menu for Receiver - removed edit donation access
               <>
                 <Link
                   to="/receiver-dashboard"
