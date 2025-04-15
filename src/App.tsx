@@ -16,6 +16,7 @@ import DonationDetails from "./pages/donation-details";
 import DonorProfile from "./pages/donor-profile";
 import ReceiverProfile from "./pages/receiver-profile";
 import NewDonation from "./pages/new-donation";
+import Campaigns from "./pages/campaigns";
 import About from "./pages/about";
 import Contact from "./pages/contact";
 import NotFound from "./pages/NotFound";
@@ -93,6 +94,9 @@ const App = () => {
             
             {/* Generic profile redirector */}
             <Route path="/profile" element={<ProfileRedirect />} />
+            
+            {/* New Campaigns Route - accessible to both roles */}
+            <Route path="/campaigns" element={<Campaigns />} />
             
             {/* Protected Donor Routes */}
             <Route path="/new-donation" element={

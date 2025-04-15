@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -14,10 +13,8 @@ export function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    // Check stored role first (for protected routes)
     const storedRole = localStorage.getItem("userRole");
     
-    // Then check path-based role if stored role is not available
     const path = location.pathname;
     if (storedRole === "donor" || path.includes("donor")) {
       setIsLoggedIn(true);
@@ -46,9 +43,7 @@ export function Navbar() {
     };
   }, [location.pathname]);
 
-  // Handler for logout (simulated)
   const handleLogout = () => {
-    // In a real app, we would clear authentication tokens here
     localStorage.removeItem("userRole");
     window.location.href = "/login";
   };
@@ -77,7 +72,6 @@ export function Navbar() {
           </Link>
         )}
 
-        {/* Desktop Navigation - Post Login - Donor */}
         {isLoggedIn && userRole === "donor" && (
           <nav className="hidden md:flex items-center gap-6">
             <Link 
@@ -138,7 +132,6 @@ export function Navbar() {
           </nav>
         )}
 
-        {/* Desktop Navigation - Post Login - Receiver */}
         {isLoggedIn && userRole === "receiver" && (
           <nav className="hidden md:flex items-center gap-6">
             <Link 
@@ -199,7 +192,6 @@ export function Navbar() {
           </nav>
         )}
 
-        {/* Desktop Navigation - Pre Login */}
         {!isLoggedIn && (
           <nav className="hidden md:flex items-center gap-6">
             <Link 
@@ -245,7 +237,6 @@ export function Navbar() {
           </nav>
         )}
 
-        {/* Mobile Menu Button */}
         <Button
           variant="ghost"
           size="icon"
@@ -256,12 +247,10 @@ export function Navbar() {
         </Button>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white shadow-lg p-4">
           <nav className="flex flex-col gap-4">
             {isLoggedIn && userRole === "donor" ? (
-              // Post-login mobile menu for Donor
               <>
                 <Link
                   to="/donor-dashboard"
@@ -320,7 +309,6 @@ export function Navbar() {
                 </Link>
               </>
             ) : isLoggedIn && userRole === "receiver" ? (
-              // Post-login mobile menu for Receiver - removed edit donation access
               <>
                 <Link
                   to="/receiver-dashboard"
@@ -379,7 +367,6 @@ export function Navbar() {
                 </Link>
               </>
             ) : (
-              // Pre-login mobile menu
               <>
                 <Link
                   to="/"
@@ -413,6 +400,7 @@ export function Navbar() {
                 </Link>
               </>
             )}
+
             <hr className="my-2" />
             <LanguageToggle className="justify-start px-0" />
             {isLoggedIn ? (
